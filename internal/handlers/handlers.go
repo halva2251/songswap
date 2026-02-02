@@ -5,12 +5,9 @@ import (
 	"net/http"
 	"strings"
 
-	"github.com/halva2251/songswap/internal/models"
+	"github.com/halva/songswap/internal/database"
+	"github.com/halva/songswap/internal/models"
 )
-
-// In-memory storage for now (I'll add database later)
-var songs []models.Song
-var nextID int64 = 1
 
 func Health(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
@@ -20,33 +17,53 @@ func Health(w http.ResponseWriter, r *http.Request) {
 func SubmitSong(w http.ResponseWriter, r *http.Request) {
 	var req models.SubmitSongRequest
 
-	// Decode the JSON body
 	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
 		http.Error(w, "Invalid request body", http.StatusBadRequest)
 		return
 	}
 
-	// Validate
 	if req.URL == "" {
 		http.Error(w, "URL is required", http.StatusBadRequest)
 		return
 	}
 
-	// Create the song
-	song := models.Song{
-		ID:           nextID,
-		URL:          req.URL,
-		Platform:     detectPlatform(req.URL),
-		ContextCrumb: req.ContextCrumb,
+	platform := detectPlatform(req.URL)
+
+	var song models.Song
+	err := database.DB.QueryRow(`
+		INSERT INTO songs (url, platform, context_crumb)
+		VALUES ($1, $2, $3)
+		RETURNING id, url, platform, context_crumb, created_at
+	`, req.URL, platform, req.ContextCrumb).Scan(
+		&song.ID, &song.URL, &song.Platform, &song.ContextCrumb, &song.CreatedAt,
+	)
+
+	if err != nil {
+		http.Error(w, "Failed to save song", http.StatusInternalServerError)
+		return
 	}
-	nextID++
 
-	// Store it
-	songs = append(songs, song)
-
-	// Respond
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(http.StatusCreated)
+	json.NewEncoder(w).Encode(song)
+}
+
+func Discover(w http.ResponseWriter, r *http.Request) {
+	var song models.Song
+
+	err := database.DB.QueryRow(`
+		SELECT id, url, platform, context_crumb, created_at
+		FROM songs
+		ORDER BY RANDOM()
+		LIMIT 1
+	`).Scan(&song.ID, &song.URL, &song.Platform, &song.ContextCrumb, &song.CreatedAt)
+
+	if err != nil {
+		http.Error(w, "No songs in the pool yet", http.StatusNotFound)
+		return
+	}
+
+	w.Header().Set("Content-Type", "application/json")
 	json.NewEncoder(w).Encode(song)
 }
 
