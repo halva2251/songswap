@@ -28,7 +28,7 @@ func main() {
 	mux.HandleFunc("DELETE /songs/{id}/like", handlers.AuthMiddleware(handlers.UnlikeSong))
 
 	log.Printf("Server starting on port %s", port)
-	if err := http.ListenAndServe(":"+port, mux); err != nil {
+	if err := http.ListenAndServe(":"+port, handlers.CORS(mux)); err != nil {
 		log.Fatal(err)
-	}
+	}	
 }
