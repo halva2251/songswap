@@ -11,7 +11,6 @@ import (
 func main() {
 	port := "8080"
 
-	// Connect to database
 	if err := database.Connect(); err != nil {
 		log.Fatal("Failed to connect to database:", err)
 	}
@@ -20,6 +19,8 @@ func main() {
 	mux := http.NewServeMux()
 
 	mux.HandleFunc("GET /health", handlers.Health)
+	mux.HandleFunc("POST /register", handlers.Register)
+	mux.HandleFunc("POST /login", handlers.Login)
 	mux.HandleFunc("POST /songs", handlers.SubmitSong)
 	mux.HandleFunc("GET /discover", handlers.Discover)
 
