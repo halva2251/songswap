@@ -49,17 +49,38 @@ func SubmitSong(w http.ResponseWriter, r *http.Request) {
 }
 
 func Discover(w http.ResponseWriter, r *http.Request) {
+	userID, ok := r.Context().Value(UserIDKey).(int64)
+	if !ok {
+		http.Error(w, "Unauthorized", http.StatusUnauthorized)
+		return
+	}
+
 	var song models.Song
 
+	// Get a random song the user hasn't seen yet
 	err := database.DB.QueryRow(`
 		SELECT id, url, platform, context_crumb, created_at
 		FROM songs
+		WHERE id NOT IN (
+			SELECT song_id FROM discoveries WHERE user_id = $1
+		)
 		ORDER BY RANDOM()
 		LIMIT 1
-	`).Scan(&song.ID, &song.URL, &song.Platform, &song.ContextCrumb, &song.CreatedAt)
+	`, userID).Scan(&song.ID, &song.URL, &song.Platform, &song.ContextCrumb, &song.CreatedAt)
 
 	if err != nil {
-		http.Error(w, "No songs in the pool yet", http.StatusNotFound)
+		http.Error(w, "No new songs to discover", http.StatusNotFound)
+		return
+	}
+
+	// Record the discovery
+	_, err = database.DB.Exec(`
+		INSERT INTO discoveries (user_id, song_id)
+		VALUES ($1, $2)
+	`, userID, song.ID)
+
+	if err != nil {
+		http.Error(w, "Failed to record discovery", http.StatusInternalServerError)
 		return
 	}
 
