@@ -1,5 +1,6 @@
 import { useState } from "react";
 import Auth from "./Auth";
+import Discover from "./Discover";
 
 function App() {
   const [token, setToken] = useState<string | null>(null);
@@ -14,11 +15,7 @@ function App() {
     return <Auth onLogin={handleLogin} />;
   }
 
-  return (
-    <div>
-      <h1>welcome, {username}</h1>
-    </div>
-  );
+  return <Discover token={token} />;
 }
 
 export default App;
