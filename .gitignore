@@ -9,6 +9,7 @@ songswap
 # Build output
 /bin/
 /dist/
+/cmd/api/api
 
 # Test binary
 *.test
@@ -25,10 +26,12 @@ coverage.html
 .vscode/
 *.swp
 *.swo
+*~
 
 # Environment files
 .env
 .env.local
+.env.*.local
 
 # OS files
 .DS_Store
@@ -37,3 +40,22 @@ Thumbs.db
 # Database
 *.db
 *.sqlite
+
+# Go workspace files (if not using)
+go.work
+go.work.sum
+
+# Debug binaries
+__debug_bin*
+
+# Air live reload (if used)
+tmp/
+
+# Frontend (Node.js)
+node_modules/
+*.log
+.pnpm-debug.log*
+
+# Frontend build output
+/frontend/dist/
+/frontend/build/
