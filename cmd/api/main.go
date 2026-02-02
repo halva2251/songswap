@@ -23,6 +23,9 @@ func main() {
 	mux.HandleFunc("POST /login", handlers.Login)
 	mux.HandleFunc("POST /songs", handlers.SubmitSong)
 	mux.HandleFunc("GET /discover", handlers.AuthMiddleware(handlers.Discover))
+	mux.HandleFunc("POST /songs/{id}/like", handlers.AuthMiddleware(handlers.LikeSong))
+	mux.HandleFunc("GET /history", handlers.AuthMiddleware(handlers.History))
+	mux.HandleFunc("DELETE /songs/{id}/like", handlers.AuthMiddleware(handlers.UnlikeSong))
 
 	log.Printf("Server starting on port %s", port)
 	if err := http.ListenAndServe(":"+port, mux); err != nil {

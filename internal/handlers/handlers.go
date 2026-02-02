@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"net/http"
 	"strings"
+	"time"
 
 	"github.com/halva/songswap/internal/database"
 	"github.com/halva/songswap/internal/models"
@@ -100,4 +101,116 @@ func detectPlatform(url string) string {
 	default:
 		return "other"
 	}
+}
+
+func LikeSong(w http.ResponseWriter, r *http.Request) {
+	userID, ok := r.Context().Value(UserIDKey).(int64)
+	if !ok {
+		http.Error(w, "Unauthorized", http.StatusUnauthorized)
+		return
+	}
+
+	songID := r.PathValue("id")
+	if songID == "" {
+		http.Error(w, "Song ID required", http.StatusBadRequest)
+		return
+	}
+
+	result, err := database.DB.Exec(`
+		UPDATE discoveries
+		SET liked = true
+		WHERE user_id = $1 AND song_id = $2
+	`, userID, songID)
+
+	if err != nil {
+		http.Error(w, "Failed to like song", http.StatusInternalServerError)
+		return
+	}
+
+	rows, _ := result.RowsAffected()
+	if rows == 0 {
+		http.Error(w, "Song not found in your discoveries", http.StatusNotFound)
+		return
+	}
+
+	w.Header().Set("Content-Type", "application/json")
+	w.Write([]byte(`{"liked": true}`))
+}
+
+func History(w http.ResponseWriter, r *http.Request) {
+	userID, ok := r.Context().Value(UserIDKey).(int64)
+	if !ok {
+		http.Error(w, "Unauthorized", http.StatusUnauthorized)
+		return
+	}
+
+	rows, err := database.DB.Query(`
+		SELECT s.id, s.url, s.platform, s.context_crumb, s.created_at, d.liked, d.discovered_at
+		FROM discoveries d
+		JOIN songs s ON d.song_id = s.id
+		WHERE d.user_id = $1
+		ORDER BY d.discovered_at DESC
+	`, userID)
+
+	if err != nil {
+		http.Error(w, "Failed to fetch history", http.StatusInternalServerError)
+		return
+	}
+	defer rows.Close()
+
+	var discoveries []map[string]interface{}
+
+	for rows.Next() {
+		var song models.Song
+		var liked *bool
+		var discoveredAt time.Time
+
+		err := rows.Scan(&song.ID, &song.URL, &song.Platform, &song.ContextCrumb, &song.CreatedAt, &liked, &discoveredAt)
+		if err != nil {
+			continue
+		}
+
+		discoveries = append(discoveries, map[string]interface{}{
+			"song":          song,
+			"liked":         liked,
+			"discovered_at": discoveredAt,
+		})
+	}
+
+	w.Header().Set("Content-Type", "application/json")
+	json.NewEncoder(w).Encode(discoveries)
+}
+
+func UnlikeSong(w http.ResponseWriter, r *http.Request) {
+	userID, ok := r.Context().Value(UserIDKey).(int64)
+	if !ok {
+		http.Error(w, "Unauthorized", http.StatusUnauthorized)
+		return
+	}
+
+	songID := r.PathValue("id")
+	if songID == "" {
+		http.Error(w, "Song ID required", http.StatusBadRequest)
+		return
+	}
+
+	result, err := database.DB.Exec(`
+		UPDATE discoveries
+		SET liked = NULL
+		WHERE user_id = $1 AND song_id = $2
+	`, userID, songID)
+
+	if err != nil {
+		http.Error(w, "Failed to unlike song", http.StatusInternalServerError)
+		return
+	}
+
+	rows, _ := result.RowsAffected()
+	if rows == 0 {
+		http.Error(w, "Song not found in your discoveries", http.StatusNotFound)
+		return
+	}
+
+	w.Header().Set("Content-Type", "application/json")
+	w.Write([]byte(`{"liked": null}`))
 }
