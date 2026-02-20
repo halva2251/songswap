@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { login, register } from "./api";
+import "./Auth.css";
 
 interface AuthProps {
   onLogin: (token: string, username: string) => void;
@@ -25,88 +26,37 @@ export default function Auth({ onLogin }: AuthProps) {
   }
 
   return (
-    <div style={styles.container}>
+    <div className="auth-container">
       <h1>songswap</h1>
-      <p style={styles.tagline}>give a song, get a song</p>
+      <p className="auth-tagline">give a song, get a song</p>
 
-      <form onSubmit={handleSubmit} style={styles.form}>
+      <form onSubmit={handleSubmit} className="auth-form">
         <input
           type="text"
           placeholder="username"
           value={username}
           onChange={(e) => setUsername(e.target.value)}
-          style={styles.input}
+          className="auth-input"
         />
         <input
           type="password"
           placeholder="password"
           value={password}
           onChange={(e) => setPassword(e.target.value)}
-          style={styles.input}
+          className="auth-input"
         />
-        {error && <p style={styles.error}>{error}</p>}
-        <button type="submit" style={styles.button}>
+        {error && <p className="auth-error">{error}</p>}
+        <button type="submit" className="auth-button">
           {isRegister ? "register" : "login"}
         </button>
       </form>
 
-      <p style={styles.switch}>
+      <p className="auth-switch">
         {isRegister ? "already have an account? " : "don't have an account? "}
-        <span onClick={() => setIsRegister(!isRegister)} style={styles.link}>
+        <span onClick={() => setIsRegister(!isRegister)} className="auth-link">
           {isRegister ? "login" : "register"}
         </span>
       </p>
     </div>
   );
 }
-
-const styles: { [key: string]: React.CSSProperties } = {
-  container: {
-    display: "flex",
-    flexDirection: "column",
-    alignItems: "center",
-    justifyContent: "center",
-    minHeight: "100vh",
-    padding: "20px",
-  },
-  tagline: {
-    color: "#888",
-    marginBottom: "40px",
-  },
-  form: {
-    display: "flex",
-    flexDirection: "column",
-    gap: "12px",
-    width: "100%",
-    maxWidth: "300px",
-  },
-  input: {
-    padding: "12px",
-    borderRadius: "8px",
-    border: "1px solid #333",
-    background: "#1a1a1a",
-    color: "#e0e0e0",
-    fontSize: "16px",
-  },
-  button: {
-    padding: "12px",
-    borderRadius: "8px",
-    border: "none",
-    background: "#3b82f6",
-    color: "white",
-    fontSize: "16px",
-    cursor: "pointer",
-  },
-  error: {
-    color: "#ef4444",
-    fontSize: "14px",
-  },
-  switch: {
-    marginTop: "20px",
-    color: "#888",
-  },
-  link: {
-    color: "#3b82f6",
-    cursor: "pointer",
-  },
-};

@@ -1,0 +1,110 @@
+.discover-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 40px 20px;
+  min-height: 100vh;
+}
+
+.discover-song-card {
+  margin-top: 40px;
+  padding: 30px;
+  background: #1a1a1a;
+  border-radius: 12px;
+  max-width: 500px;
+  width: 100%;
+  text-align: center;
+}
+
+.discover-context {
+  color: #888;
+  font-style: italic;
+  margin-bottom: 20px;
+}
+
+.discover-link {
+  color: #60a5fa;
+  word-break: break-all;
+}
+
+.discover-actions {
+  margin-top: 30px;
+  display: flex;
+  gap: 12px;
+  justify-content: center;
+}
+
+.discover-button {
+  padding: 10px 20px;
+  border-radius: 8px;
+  border: none;
+  background: #3b82f6;
+  color: white;
+  cursor: pointer;
+}
+
+.discover-like-button {
+  padding: 10px 20px;
+  border-radius: 8px;
+  border: 1px solid #333;
+  background: transparent;
+  color: #e0e0e0;
+  cursor: pointer;
+}
+
+.discover-big-button {
+  margin-top: 60px;
+  padding: 20px 40px;
+  border-radius: 12px;
+  border: none;
+  background: #3b82f6;
+  color: white;
+  font-size: 18px;
+  cursor: pointer;
+}
+
+.discover-error {
+  color: #ef4444;
+  margin-top: 20px;
+}
+
+.discover-submit-section {
+  margin-top: 60px;
+}
+
+.discover-form {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  width: 300px;
+}
+
+.discover-input {
+  padding: 12px;
+  border-radius: 8px;
+  border: 1px solid #333;
+  background: #1a1a1a;
+  color: #e0e0e0;
+}
+
+.discover-form-actions {
+  display: flex;
+  gap: 12px;
+}
+
+.discover-cancel-button {
+  flex: 1;
+  padding: 10px;
+  border-radius: 8px;
+  border: 1px solid #333;
+  background: transparent;
+  color: #888;
+  cursor: pointer;
+}
+
+.discover-text-button {
+  background: none;
+  border: none;
+  color: #888;
+  cursor: pointer;
+}

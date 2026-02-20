@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { discover, likeSong, submitSong } from "./api";
+import "./Discover.css";
 
 interface Song {
   id: number;
@@ -57,75 +58,75 @@ export default function Discover({ token }: DiscoverProps) {
   }
 
   return (
-    <div style={styles.container}>
+    <div className="discover-container">
       <h1>songswap</h1>
 
       {song ? (
-        <div style={styles.songCard}>
+        <div className="discover-song-card">
           {song.context_crumb && (
-            <p style={styles.context}>"{song.context_crumb}"</p>
+            <p className="discover-context">"{song.context_crumb}"</p>
           )}
           <a
             href={song.url}
             target="_blank"
             rel="noopener noreferrer"
-            style={styles.link}
+            className="discover-link"
           >
             {song.url}
           </a>
-          <div style={styles.actions}>
+          <div className="discover-actions">
             <button
               onClick={handleLike}
-              style={styles.likeButton}
+              className="discover-like-button"
               disabled={liked}
             >
               {liked ? "♥ liked" : "♡ like"}
             </button>
-            <button onClick={handleDiscover} style={styles.button}>
+            <button onClick={handleDiscover} className="discover-button">
               next →
             </button>
           </div>
         </div>
       ) : (
-        <button onClick={handleDiscover} style={styles.bigButton}>
+        <button onClick={handleDiscover} className="discover-big-button">
           discover a song
         </button>
       )}
 
-      {error && <p style={styles.error}>{error}</p>}
+      {error && <p className="discover-error">{error}</p>}
 
-      <div style={styles.submitSection}>
+      <div className="discover-submit-section">
         {showSubmit ? (
-          <form onSubmit={handleSubmit} style={styles.form}>
+          <form onSubmit={handleSubmit} className="discover-form">
             <input
               type="text"
               placeholder="paste a song link"
               value={url}
               onChange={(e) => setUrl(e.target.value)}
-              style={styles.input}
+              className="discover-input"
             />
             <input
               type="text"
               placeholder="context crumb (optional)"
               value={context}
               onChange={(e) => setContext(e.target.value)}
-              style={styles.input}
+              className="discover-input"
             />
-            <div style={styles.formActions}>
+            <div className="discover-form-actions">
               <button
                 type="button"
                 onClick={() => setShowSubmit(false)}
-                style={styles.cancelButton}
+                className="discover-cancel-button"
               >
                 cancel
               </button>
-              <button type="submit" style={styles.button}>
+              <button type="submit" className="discover-button">
                 submit
               </button>
             </div>
           </form>
         ) : (
-          <button onClick={() => setShowSubmit(true)} style={styles.textButton}>
+          <button onClick={() => setShowSubmit(true)} className="discover-text-button">
             + add a song to the pool
           </button>
         )}
@@ -133,102 +134,3 @@ export default function Discover({ token }: DiscoverProps) {
     </div>
   );
 }
-
-const styles: { [key: string]: React.CSSProperties } = {
-  container: {
-    display: "flex",
-    flexDirection: "column",
-    alignItems: "center",
-    padding: "40px 20px",
-    minHeight: "100vh",
-  },
-  songCard: {
-    marginTop: "40px",
-    padding: "30px",
-    background: "#1a1a1a",
-    borderRadius: "12px",
-    maxWidth: "500px",
-    width: "100%",
-    textAlign: "center",
-  },
-  context: {
-    color: "#888",
-    fontStyle: "italic",
-    marginBottom: "20px",
-  },
-  link: {
-    color: "#60a5fa",
-    wordBreak: "break-all",
-  },
-  actions: {
-    marginTop: "30px",
-    display: "flex",
-    gap: "12px",
-    justifyContent: "center",
-  },
-  button: {
-    padding: "10px 20px",
-    borderRadius: "8px",
-    border: "none",
-    background: "#3b82f6",
-    color: "white",
-    cursor: "pointer",
-  },
-  likeButton: {
-    padding: "10px 20px",
-    borderRadius: "8px",
-    border: "1px solid #333",
-    background: "transparent",
-    color: "#e0e0e0",
-    cursor: "pointer",
-  },
-  bigButton: {
-    marginTop: "60px",
-    padding: "20px 40px",
-    borderRadius: "12px",
-    border: "none",
-    background: "#3b82f6",
-    color: "white",
-    fontSize: "18px",
-    cursor: "pointer",
-  },
-  error: {
-    color: "#ef4444",
-    marginTop: "20px",
-  },
-  submitSection: {
-    marginTop: "60px",
-  },
-  form: {
-    display: "flex",
-    flexDirection: "column",
-    gap: "12px",
-    width: "300px",
-  },
-  input: {
-    padding: "12px",
-    borderRadius: "8px",
-    border: "1px solid #333",
-    background: "#1a1a1a",
-    color: "#e0e0e0",
-  },
-  formActions: {
-    display: "flex",
-    gap: "12px",
-  },
-  cancelButton: {
-    flex: 1,
-    padding: "10px",
-    borderRadius: "8px",
-    border: "1px solid #333",
-    background: "transparent",
-    color: "#888",
-    cursor: "pointer",
-  },
-  textButton: {
-    background: "none",
-    border: "none",
-    color: "#888",
-    cursor: "pointer",
-  },
-};

@@ -1,0 +1,23 @@
+.app-container {
+  min-height: 100vh;
+}
+
+.app-nav {
+  display: flex;
+  justify-content: center;
+  gap: 20px;
+  padding: 20px;
+  border-bottom: 1px solid #222;
+}
+
+.app-tab {
+  background: none;
+  border: none;
+  color: #888;
+  font-size: 16px;
+  cursor: pointer;
+}
+
+.app-tab.active {
+  color: #e0e0e0;
+}

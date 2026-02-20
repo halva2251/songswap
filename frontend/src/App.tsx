@@ -2,6 +2,7 @@ import { useState } from "react";
 import Auth from "./Auth";
 import Discover from "./Discover";
 import History from "./History";
+import "./App.css";
 
 function App() {
   const [token, setToken] = useState<string | null>(null);
@@ -18,17 +19,17 @@ function App() {
   }
 
   return (
-    <div style={styles.container}>
-      <nav style={styles.nav}>
+    <div className="app-container">
+      <nav className="app-nav">
         <button
           onClick={() => setPage("discover")}
-          style={page === "discover" ? styles.activeTab : styles.tab}
+          className={`app-tab ${page === "discover" ? "active" : ""}`}
         >
           discover
         </button>
         <button
           onClick={() => setPage("history")}
-          style={page === "history" ? styles.activeTab : styles.tab}
+          className={`app-tab ${page === "history" ? "active" : ""}`}
         >
           history
         </button>
@@ -42,32 +43,5 @@ function App() {
     </div>
   );
 }
-
-const styles: { [key: string]: React.CSSProperties } = {
-  container: {
-    minHeight: "100vh",
-  },
-  nav: {
-    display: "flex",
-    justifyContent: "center",
-    gap: "20px",
-    padding: "20px",
-    borderBottom: "1px solid #222",
-  },
-  tab: {
-    background: "none",
-    border: "none",
-    color: "#888",
-    fontSize: "16px",
-    cursor: "pointer",
-  },
-  activeTab: {
-    background: "none",
-    border: "none",
-    color: "#e0e0e0",
-    fontSize: "16px",
-    cursor: "pointer",
-  },
-};
 
 export default App;
