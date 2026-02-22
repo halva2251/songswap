@@ -21,7 +21,7 @@ export async function login(username: string, password: string) {
 }
 
 export async function submitSong(url: string, contextCrumb?: string) {
-  const res = await fetch(`${API_URL}/songs`, {
+  const res = await authFetch(`${API_URL}/songs`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({ url, context_crumb: contextCrumb || null }),
@@ -31,7 +31,7 @@ export async function submitSong(url: string, contextCrumb?: string) {
 }
 
 export async function discover(token: string) {
-  const res = await fetch(`${API_URL}/discover`, {
+  const res = await authFetch(`${API_URL}/discover`, {
     headers: { Authorization: `Bearer ${token}` },
   });
   if (!res.ok) throw new Error(await res.text());
@@ -39,7 +39,7 @@ export async function discover(token: string) {
 }
 
 export async function likeSong(token: string, songId: number) {
-  const res = await fetch(`${API_URL}/songs/${songId}/like`, {
+  const res = await authFetch(`${API_URL}/songs/${songId}/like`, {
     method: "POST",
     headers: { Authorization: `Bearer ${token}` },
   });
@@ -48,9 +48,19 @@ export async function likeSong(token: string, songId: number) {
 }
 
 export async function getHistory(token: string) {
-  const res = await fetch(`${API_URL}/history`, {
+  const res = await authFetch(`${API_URL}/history`, {
     headers: { Authorization: `Bearer ${token}` },
   });
   if (!res.ok) throw new Error(await res.text());
   return res.json();
+}
+
+async function authFetch(url: string, options: RequestInit = {}) {
+  const res = await fetch(url, options);
+  if (res.status === 401) {
+    localStorage.removeItem("token");
+    localStorage.removeItem("username");
+    window.location.reload();
+  }
+  return res;
 }
