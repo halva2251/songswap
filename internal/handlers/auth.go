@@ -11,7 +11,7 @@ import (
 	"golang.org/x/crypto/bcrypt"
 )
 
-var jwtSecret = []byte("DiscoElysiumswapthesongtofeelLesslikethistypeofAnimal")
+var JwtSecret = []byte("DiscoElysiumswapthesongtofeelLesslikethistypeofAnimal")
 
 func Register(w http.ResponseWriter, r *http.Request) {
 	var req models.RegisterRequest
@@ -103,5 +103,5 @@ func createToken(userID int64) (string, error) {
 		"exp":     time.Now().Add(time.Hour * 24 * 7).Unix(), // 7 days
 	})
 
-	return token.SignedString(jwtSecret)
+	return token.SignedString(JwtSecret)
 }

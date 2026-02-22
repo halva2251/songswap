@@ -7,6 +7,7 @@ import (
 	"time"
 
 	"github.com/halva/songswap/internal/database"
+	"github.com/halva/songswap/internal/middleware"
 	"github.com/halva/songswap/internal/models"
 )
 
@@ -50,7 +51,7 @@ func SubmitSong(w http.ResponseWriter, r *http.Request) {
 }
 
 func Discover(w http.ResponseWriter, r *http.Request) {
-	userID, ok := r.Context().Value(UserIDKey).(int64)
+	userID, ok := r.Context().Value(middleware.UserIDKey).(int64)
 	if !ok {
 		http.Error(w, "Unauthorized", http.StatusUnauthorized)
 		return
@@ -104,7 +105,7 @@ func detectPlatform(url string) string {
 }
 
 func LikeSong(w http.ResponseWriter, r *http.Request) {
-	userID, ok := r.Context().Value(UserIDKey).(int64)
+	userID, ok := r.Context().Value(middleware.UserIDKey).(int64)
 	if !ok {
 		http.Error(w, "Unauthorized", http.StatusUnauthorized)
 		return
@@ -138,7 +139,7 @@ func LikeSong(w http.ResponseWriter, r *http.Request) {
 }
 
 func History(w http.ResponseWriter, r *http.Request) {
-	userID, ok := r.Context().Value(UserIDKey).(int64)
+	userID, ok := r.Context().Value(middleware.UserIDKey).(int64)
 	if !ok {
 		http.Error(w, "Unauthorized", http.StatusUnauthorized)
 		return
@@ -182,7 +183,7 @@ func History(w http.ResponseWriter, r *http.Request) {
 }
 
 func UnlikeSong(w http.ResponseWriter, r *http.Request) {
-	userID, ok := r.Context().Value(UserIDKey).(int64)
+	userID, ok := r.Context().Value(middleware.UserIDKey).(int64)
 	if !ok {
 		http.Error(w, "Unauthorized", http.StatusUnauthorized)
 		return

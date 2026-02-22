@@ -1,4 +1,4 @@
-package handlers
+package middleware
 
 import (
 	"context"
@@ -12,7 +12,7 @@ type contextKey string
 
 const UserIDKey contextKey = "user_id"
 
-func AuthMiddleware(next http.HandlerFunc) http.HandlerFunc {
+func AuthMiddleware(secret []byte, next http.HandlerFunc) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		authHeader := r.Header.Get("Authorization")
 		if authHeader == "" {
@@ -20,19 +20,15 @@ func AuthMiddleware(next http.HandlerFunc) http.HandlerFunc {
 			return
 		}
 
-		// Expect "Bearer <token>"
 		parts := strings.Split(authHeader, " ")
 		if len(parts) != 2 || parts[0] != "Bearer" {
 			http.Error(w, "Invalid authorization format", http.StatusUnauthorized)
 			return
 		}
 
-		tokenString := parts[1]
-
-		token, err := jwt.Parse(tokenString, func(token *jwt.Token) (interface{}, error) {
-			return jwtSecret, nil
+		token, err := jwt.Parse(parts[1], func(token *jwt.Token) (interface{}, error) {
+			return secret, nil
 		})
-
 		if err != nil || !token.Valid {
 			http.Error(w, "Invalid token", http.StatusUnauthorized)
 			return
@@ -45,8 +41,6 @@ func AuthMiddleware(next http.HandlerFunc) http.HandlerFunc {
 		}
 
 		userID := int64(claims["user_id"].(float64))
-
-		// Add user ID to request context
 		ctx := context.WithValue(r.Context(), UserIDKey, userID)
 		next(w, r.WithContext(ctx))
 	}
