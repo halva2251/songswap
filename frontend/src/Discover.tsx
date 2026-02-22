@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { discover, likeSong, submitSong } from "./api";
 import "./Discover.css";
+import EmbedPlayer from "./EmbedPlayer";
 
 interface Song {
   id: number;
@@ -66,14 +67,7 @@ export default function Discover({ token }: DiscoverProps) {
           {song.context_crumb && (
             <p className="discover-context">"{song.context_crumb}"</p>
           )}
-          <a
-            href={song.url}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="discover-link"
-          >
-            {song.url}
-          </a>
+          <EmbedPlayer url={song.url} />
           <div className="discover-actions">
             <button
               onClick={handleLike}
@@ -126,7 +120,10 @@ export default function Discover({ token }: DiscoverProps) {
             </div>
           </form>
         ) : (
-          <button onClick={() => setShowSubmit(true)} className="discover-text-button">
+          <button
+            onClick={() => setShowSubmit(true)}
+            className="discover-text-button"
+          >
             + add a song to the pool
           </button>
         )}

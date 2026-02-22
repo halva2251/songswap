@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { getHistory } from "./api";
 import "./History.css";
+import EmbedPlayer from "./EmbedPlayer";
 
 interface Song {
   id: number;
@@ -54,14 +55,7 @@ export default function History({ token }: HistoryProps) {
             {d.song.context_crumb && (
               <span className="history-context">"{d.song.context_crumb}"</span>
             )}
-            <a
-              href={d.song.url}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="history-link"
-            >
-              {d.song.url}
-            </a>
+            <EmbedPlayer url={d.song.url} />
           </div>
           <div className="history-right">
             {d.liked && <span className="history-heart">♥</span>}
