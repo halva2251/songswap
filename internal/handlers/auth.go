@@ -3,6 +3,7 @@ package handlers
 import (
 	"encoding/json"
 	"net/http"
+	"os"
 	"time"
 
 	"github.com/golang-jwt/jwt/v5"
@@ -11,7 +12,7 @@ import (
 	"golang.org/x/crypto/bcrypt"
 )
 
-var JwtSecret = []byte("DiscoElysiumswapthesongtofeelLesslikethistypeofAnimal")
+var JwtSecret = []byte(os.Getenv("JWT_SECRET"))
 
 func Register(w http.ResponseWriter, r *http.Request) {
 	var req models.RegisterRequest
@@ -22,8 +23,23 @@ func Register(w http.ResponseWriter, r *http.Request) {
 	}
 
 	if req.Username == "" || req.Password == "" {
-		http.Error(w, "Username and password are required", http.StatusBadRequest)
-		return
+    	http.Error(w, "Username and password are required", http.StatusBadRequest)
+    	return
+	}
+
+	if len(req.Username) < 3 || len(req.Username) > 30 {
+    	http.Error(w, "Username must be between 3 and 30 characters", http.StatusBadRequest)
+    	return
+	}
+
+	if len(req.Password) < 8 {
+    	http.Error(w, "Password must be at least 8 characters", http.StatusBadRequest)
+    	return
+	}
+
+	if len(req.Password) > 72 {
+    	http.Error(w, "Password must be under 72 characters", http.StatusBadRequest)
+    	return
 	}
 
 	// Hash the password

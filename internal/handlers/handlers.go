@@ -29,6 +29,21 @@ func SubmitSong(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	if len(req.URL) > 2000 {
+		http.Error(w, "URL is too long", http.StatusBadRequest)
+		return
+	}
+
+	if !strings.HasPrefix(req.URL, "http://") && !strings.HasPrefix(req.URL, "https://") {
+		http.Error(w, "URL must start with http:// or https://", http.StatusBadRequest)
+		return
+	}
+
+	if req.ContextCrumb != nil && len(*req.ContextCrumb) > 100 {
+		http.Error(w, "Context crumb must be under 100 characters", http.StatusBadRequest)
+		return
+	}
+
 	platform := detectPlatform(req.URL)
 
 	var song models.Song

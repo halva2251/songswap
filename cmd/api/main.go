@@ -7,9 +7,11 @@ import (
 	"github.com/halva/songswap/internal/database"
 	"github.com/halva/songswap/internal/handlers"
 	"github.com/halva/songswap/internal/middleware"
+	"github.com/joho/godotenv"
 )
 
 func main() {
+	godotenv.Load()
 	port := "8080"
 
 	if err := database.Connect(); err != nil {
