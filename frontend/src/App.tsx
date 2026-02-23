@@ -4,29 +4,6 @@ import Discover from "./Discover";
 import History from "./History";
 import "./App.css";
 
-const styles = {
-  header: {
-    display: "flex",
-    justifyContent: "flex-end",
-    alignItems: "center",
-    gap: "12px",
-    padding: "12px 20px",
-  },
-  username: {
-    color: "#888",
-    fontSize: "14px",
-  },
-  logoutButton: {
-    background: "none",
-    border: "1px solid #333",
-    color: "#888",
-    padding: "4px 12px",
-    borderRadius: "4px",
-    cursor: "pointer",
-    fontSize: "13px",
-  },
-};
-
 function App() {
   const [token, setToken] = useState<string | null>(
     localStorage.getItem("token"),
@@ -56,26 +33,31 @@ function App() {
 
   return (
     <div className="app-container">
-      <header style={styles.header}>
-        <span style={styles.username}>{username}</span>
-        <button onClick={handleLogout} style={styles.logoutButton}>
-          logout
-        </button>
+      <header className="app-header">
+        <div className="app-logo">
+          song<span>swap</span>
+        </div>
+        <nav className="app-nav">
+          <button
+            onClick={() => setPage("discover")}
+            className={`app-tab ${page === "discover" ? "active" : ""}`}
+          >
+            discover
+          </button>
+          <button
+            onClick={() => setPage("history")}
+            className={`app-tab ${page === "history" ? "active" : ""}`}
+          >
+            history
+          </button>
+        </nav>
+        <div className="app-header-right">
+          <span className="app-username">{username}</span>
+          <button onClick={handleLogout} className="app-logout">
+            logout
+          </button>
+        </div>
       </header>
-      <nav className="app-nav">
-        <button
-          onClick={() => setPage("discover")}
-          className={`app-tab ${page === "discover" ? "active" : ""}`}
-        >
-          discover
-        </button>
-        <button
-          onClick={() => setPage("history")}
-          className={`app-tab ${page === "history" ? "active" : ""}`}
-        >
-          history
-        </button>
-      </nav>
 
       {page === "discover" ? (
         <Discover token={token} />

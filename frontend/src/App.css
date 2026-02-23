@@ -2,22 +2,75 @@
   min-height: 100vh;
 }
 
+.app-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 16px 32px;
+  border-bottom: 1px solid var(--border);
+}
+
+.app-logo {
+  font-family: "Syne", sans-serif;
+  font-weight: 800;
+  font-size: 20px;
+  letter-spacing: -0.5px;
+}
+
+.app-logo span {
+  color: var(--accent);
+}
+
 .app-nav {
   display: flex;
-  justify-content: center;
-  gap: 20px;
-  padding: 20px;
-  border-bottom: 1px solid #222;
+  gap: 4px;
+  background: var(--surface);
+  border-radius: 10px;
+  padding: 4px;
 }
 
 .app-tab {
-  background: none;
+  font-family: "DM Sans", sans-serif;
+  font-size: 13px;
+  font-weight: 500;
+  padding: 8px 20px;
   border: none;
-  color: #888;
-  font-size: 16px;
+  border-radius: 8px;
   cursor: pointer;
+  background: transparent;
+  color: var(--text-muted);
+  transition: all 0.2s;
 }
 
 .app-tab.active {
-  color: #e0e0e0;
+  background: var(--border-light);
+  color: var(--text);
+}
+
+.app-header-right {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.app-username {
+  font-size: 13px;
+  color: var(--text-muted);
+}
+
+.app-logout {
+  font-family: "DM Sans", sans-serif;
+  font-size: 12px;
+  padding: 6px 14px;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  background: transparent;
+  color: var(--text-dim);
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.app-logout:hover {
+  border-color: var(--border-light);
+  color: var(--text-muted);
 }

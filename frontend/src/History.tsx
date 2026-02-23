@@ -48,20 +48,23 @@ export default function History({ token }: HistoryProps) {
   }
 
   return (
-    <div className="history-list">
-      {discoveries.map((d) => (
-        <div key={d.song.id} className="history-item">
-          <div className="history-left">
-            {d.song.context_crumb && (
-              <span className="history-context">"{d.song.context_crumb}"</span>
-            )}
-            <EmbedPlayer url={d.song.url} />
+    <div className="history-container">
+      <div className="history-title">your discoveries</div>
+      <div className="history-list">
+        {discoveries.map((d) => (
+          <div key={d.song.id} className="history-card">
+            <div className="history-card-top">
+              <span className="history-context">
+                {d.song.context_crumb ? `"${d.song.context_crumb}"` : ""}
+              </span>
+              {d.liked && <span className="history-heart">♥</span>}
+            </div>
+            <div className="history-embed">
+              <EmbedPlayer url={d.song.url} />
+            </div>
           </div>
-          <div className="history-right">
-            {d.liked && <span className="history-heart">♥</span>}
-          </div>
-        </div>
-      ))}
+        ))}
+      </div>
     </div>
   );
 }

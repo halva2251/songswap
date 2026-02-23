@@ -1,110 +1,217 @@
 .discover-container {
+  max-width: 520px;
+  margin: 0 auto;
+  padding: 60px 20px;
+}
+
+.discover-empty {
   display: flex;
   flex-direction: column;
   align-items: center;
-  padding: 40px 20px;
-  min-height: 100vh;
-}
-
-.discover-song-card {
-  margin-top: 40px;
-  padding: 30px;
-  background: #1a1a1a;
-  border-radius: 12px;
-  max-width: 500px;
-  width: 100%;
+  gap: 32px;
+  padding-top: 80px;
   text-align: center;
 }
 
-.discover-context {
-  color: #888;
-  font-style: italic;
-  margin-bottom: 20px;
+.discover-title {
+  font-family: "Syne", sans-serif;
+  font-weight: 800;
+  font-size: 28px;
+  letter-spacing: -0.5px;
 }
 
-.discover-link {
-  color: #60a5fa;
-  word-break: break-all;
-}
-
-.discover-actions {
-  margin-top: 30px;
-  display: flex;
-  gap: 12px;
-  justify-content: center;
-}
-
-.discover-button {
-  padding: 10px 20px;
-  border-radius: 8px;
-  border: none;
-  background: #3b82f6;
-  color: white;
-  cursor: pointer;
-}
-
-.discover-like-button {
-  padding: 10px 20px;
-  border-radius: 8px;
-  border: 1px solid #333;
-  background: transparent;
-  color: #e0e0e0;
-  cursor: pointer;
+.discover-subtitle {
+  color: var(--text-muted);
+  font-size: 15px;
+  margin-top: 8px;
 }
 
 .discover-big-button {
-  margin-top: 60px;
-  padding: 20px 40px;
-  border-radius: 12px;
+  font-family: "DM Sans", sans-serif;
+  font-size: 15px;
+  font-weight: 600;
+  padding: 14px 48px;
   border: none;
-  background: #3b82f6;
-  color: white;
-  font-size: 18px;
+  border-radius: 50px;
+  background: var(--accent);
+  color: #000;
   cursor: pointer;
+  transition: all 0.2s;
+}
+
+.discover-big-button:hover {
+  background: var(--accent-hover);
+  transform: translateY(-1px);
+}
+
+.discover-song-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  overflow: hidden;
+  animation: fadeUp 0.3s ease;
+}
+
+@keyframes fadeUp {
+  from {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.discover-context {
+  padding: 16px 20px 12px;
+  font-size: 13px;
+  color: var(--text-muted);
+  font-style: italic;
+}
+
+.discover-embed {
+  padding: 0 16px;
+}
+
+.discover-actions {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 16px 20px;
+}
+
+.discover-like-button {
+  font-family: "DM Sans", sans-serif;
+  font-size: 14px;
+  padding: 8px 16px;
+  border: 1px solid var(--border);
+  border-radius: 50px;
+  background: transparent;
+  color: var(--text-muted);
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.discover-like-button:hover {
+  border-color: var(--heart);
+  color: var(--heart);
+  background: var(--heart-dim);
+}
+
+.discover-like-button.liked {
+  border-color: var(--heart);
+  color: var(--heart);
+  background: var(--heart-dim);
+}
+
+.discover-next-button {
+  font-family: "DM Sans", sans-serif;
+  font-size: 14px;
+  font-weight: 500;
+  padding: 8px 24px;
+  border: none;
+  border-radius: 50px;
+  background: var(--border-light);
+  color: var(--text);
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.discover-next-button:hover {
+  background: #333;
 }
 
 .discover-error {
   color: #ef4444;
-  margin-top: 20px;
+  margin-top: 16px;
+  text-align: center;
+  font-size: 14px;
 }
 
 .discover-submit-section {
-  margin-top: 60px;
+  text-align: center;
+  margin-top: 24px;
+}
+
+.discover-text-button {
+  font-family: "DM Sans", sans-serif;
+  font-size: 13px;
+  background: none;
+  border: none;
+  color: var(--text-dim);
+  cursor: pointer;
+  transition: color 0.2s;
+}
+
+.discover-text-button:hover {
+  color: var(--text-muted);
 }
 
 .discover-form {
+  margin-top: 32px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 20px;
   display: flex;
   flex-direction: column;
-  gap: 12px;
-  width: 300px;
+  gap: 10px;
+  animation: fadeUp 0.2s ease;
 }
 
 .discover-input {
-  padding: 12px;
-  border-radius: 8px;
-  border: 1px solid #333;
-  background: #1a1a1a;
-  color: #e0e0e0;
+  font-family: "DM Sans", sans-serif;
+  width: 100%;
+  padding: 12px 16px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  background: var(--bg);
+  color: var(--text);
+  font-size: 14px;
+  outline: none;
+  transition: border-color 0.2s;
+}
+
+.discover-input:focus {
+  border-color: var(--accent);
+}
+
+.discover-input::placeholder {
+  color: var(--text-dim);
 }
 
 .discover-form-actions {
   display: flex;
-  gap: 12px;
+  justify-content: flex-end;
+  gap: 10px;
+  margin-top: 6px;
 }
 
 .discover-cancel-button {
-  flex: 1;
-  padding: 10px;
+  font-family: "DM Sans", sans-serif;
+  font-size: 13px;
+  padding: 8px 16px;
+  border: none;
   border-radius: 8px;
-  border: 1px solid #333;
   background: transparent;
-  color: #888;
+  color: var(--text-muted);
   cursor: pointer;
 }
 
-.discover-text-button {
-  background: none;
+.discover-submit-button {
+  font-family: "DM Sans", sans-serif;
+  font-size: 13px;
+  font-weight: 600;
+  padding: 8px 20px;
   border: none;
-  color: #888;
+  border-radius: 8px;
+  background: var(--accent);
+  color: #000;
   cursor: pointer;
+  transition: background 0.2s;
+}
+
+.discover-submit-button:hover {
+  background: var(--accent-hover);
 }

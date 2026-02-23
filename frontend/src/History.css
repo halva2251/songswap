@@ -1,51 +1,60 @@
+.history-container {
+  max-width: 520px;
+  margin: 0 auto;
+  padding: 40px 20px;
+}
+
+.history-title {
+  font-family: "Syne", sans-serif;
+  font-weight: 700;
+  font-size: 22px;
+  margin-bottom: 24px;
+  letter-spacing: -0.3px;
+}
+
 .history-loading,
 .history-empty {
   padding: 40px;
   text-align: center;
+  color: var(--text-muted);
 }
 
 .history-list {
   display: flex;
   flex-direction: column;
   gap: 12px;
-  width: 100%;
-  max-width: 600px;
 }
 
-.history-item {
+.history-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  overflow: hidden;
+  transition: border-color 0.2s;
+}
+
+.history-card:hover {
+  border-color: var(--border-light);
+}
+
+.history-card-top {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 16px;
-  background: #1a1a1a;
-  border-radius: 8px;
-}
-
-.history-left {
-  display: flex;
-  flex-direction: column;
-  gap: 4px;
-  overflow: hidden;
+  padding: 14px 18px 10px;
 }
 
 .history-context {
-  color: #888;
+  font-size: 13px;
+  color: var(--text-muted);
   font-style: italic;
-  font-size: 14px;
-}
-
-.history-link {
-  color: #60a5fa;
-  font-size: 14px;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-}
-
-.history-right {
-  margin-left: 16px;
 }
 
 .history-heart {
-  color: #ef4444;
+  color: var(--heart);
+  font-size: 14px;
+}
+
+.history-embed {
+  padding: 0 14px 14px;
 }

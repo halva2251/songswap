@@ -27,7 +27,9 @@ export default function Auth({ onLogin }: AuthProps) {
 
   return (
     <div className="auth-container">
-      <h1>songswap</h1>
+      <h1 className="auth-logo">
+        song<span>swap</span>
+      </h1>
       <p className="auth-tagline">give a song, get a song</p>
 
       <form onSubmit={handleSubmit} className="auth-form">

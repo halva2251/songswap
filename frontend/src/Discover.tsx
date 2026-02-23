@@ -60,31 +60,36 @@ export default function Discover({ token }: DiscoverProps) {
 
   return (
     <div className="discover-container">
-      <h1>songswap</h1>
-
       {song ? (
         <div className="discover-song-card">
           {song.context_crumb && (
             <p className="discover-context">"{song.context_crumb}"</p>
           )}
-          <EmbedPlayer url={song.url} />
+          <div className="discover-embed">
+            <EmbedPlayer url={song.url} />
+          </div>
           <div className="discover-actions">
             <button
               onClick={handleLike}
-              className="discover-like-button"
-              disabled={liked}
+              className={`discover-like-button ${liked ? "liked" : ""}`}
             >
               {liked ? "♥ liked" : "♡ like"}
             </button>
-            <button onClick={handleDiscover} className="discover-button">
+            <button onClick={handleDiscover} className="discover-next-button">
               next →
             </button>
           </div>
         </div>
       ) : (
-        <button onClick={handleDiscover} className="discover-big-button">
-          discover a song
-        </button>
+        <div className="discover-empty">
+          <div>
+            <h2 className="discover-title">discover a song</h2>
+            <p className="discover-subtitle">from a stranger, for you</p>
+          </div>
+          <button onClick={handleDiscover} className="discover-big-button">
+            discover
+          </button>
+        </div>
       )}
 
       {error && <p className="discover-error">{error}</p>}
@@ -114,7 +119,7 @@ export default function Discover({ token }: DiscoverProps) {
               >
                 cancel
               </button>
-              <button type="submit" className="discover-button">
+              <button type="submit" className="discover-submit-button">
                 submit
               </button>
             </div>
