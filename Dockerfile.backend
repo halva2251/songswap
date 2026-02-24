@@ -1,0 +1,26 @@
+# Stage 1: Build
+FROM golang:1.24-alpine AS builder
+
+WORKDIR /app
+
+# Copy dependency files first (better caching)
+COPY go.mod go.sum ./
+RUN go mod download
+
+# Copy source code
+COPY . .
+
+# Build the binary
+RUN CGO_ENABLED=0 GOOS=linux go build -o songswap ./cmd/api/main.go
+
+# Stage 2: Run
+FROM alpine:3.20
+
+WORKDIR /app
+
+# Copy just the binary from the builder
+COPY --from=builder /app/songswap .
+
+EXPOSE 8080
+
+CMD ["./songswap"]

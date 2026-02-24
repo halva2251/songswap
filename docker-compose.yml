@@ -1,0 +1,47 @@
+name: songswap
+
+services:
+  backend:
+    build:
+      context: .
+      dockerfile: Dockerfile.backend
+    depends_on:
+      db:
+        condition: service_healthy
+    environment:
+      DATABASE_URL: postgres://songswap:songswap_dev@db:5432/songswap?sslmode=disable
+      JWT_SECRET: ${JWT_SECRET}
+    ports:
+      - "127.0.0.1:8080:8080"
+    restart: unless-stopped
+
+  db:
+    image: postgres:16-alpine
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+      - ./migrations:/docker-entrypoint-initdb.d
+    environment:
+      POSTGRES_DB: songswap
+      POSTGRES_USER: songswap
+      POSTGRES_PASSWORD: songswap_dev
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U songswap -d songswap"]
+      interval: 2s
+      timeout: 5s
+      retries: 10
+
+  frontend:
+    build:
+      context: .
+      dockerfile: Dockerfile.frontend
+      args:
+        VITE_API_URL: http://localhost:8080
+    depends_on:
+      - backend
+    ports:
+      - "127.0.0.1:3000:80"
+    restart: unless-stopped
+
+volumes:
+  pgdata:

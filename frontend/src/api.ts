@@ -1,4 +1,4 @@
-const API_URL = "http://localhost:8080";
+const API_URL = import.meta.env.VITE_API_URL || "http://localhost:8080";
 
 export async function register(username: string, password: string) {
   const res = await fetch(`${API_URL}/register`, {
