@@ -11,10 +11,10 @@ services:
     environment:
       DATABASE_URL: postgres://songswap:songswap_dev@db:5432/songswap?sslmode=disable
       JWT_SECRET: ${JWT_SECRET}
+      CORS_ORIGINS: "http://localhost:5173,http://localhost:3000"
     ports:
       - "127.0.0.1:8080:8080"
     restart: unless-stopped
-
   db:
     image: postgres:16-alpine
     volumes:

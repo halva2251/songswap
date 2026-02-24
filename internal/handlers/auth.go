@@ -3,7 +3,6 @@ package handlers
 import (
 	"encoding/json"
 	"net/http"
-	"os"
 	"time"
 
 	"github.com/golang-jwt/jwt/v5"
@@ -12,7 +11,11 @@ import (
 	"golang.org/x/crypto/bcrypt"
 )
 
-var JwtSecret = []byte(os.Getenv("JWT_SECRET"))
+var JwtSecret []byte
+
+func SetJwtSecret(secret []byte) {
+	JwtSecret = secret
+}
 
 func Register(w http.ResponseWriter, r *http.Request) {
 	var req models.RegisterRequest

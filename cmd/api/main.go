@@ -3,6 +3,7 @@ package main
 import (
 	"log"
 	"net/http"
+	"os"
 
 	"github.com/halva/songswap/internal/database"
 	"github.com/halva/songswap/internal/handlers"
@@ -11,6 +12,14 @@ import (
 )
 
 func main() {
+	godotenv.Load()
+
+	secret := os.Getenv("JWT_SECRET")
+	if secret == "" {
+		log.Fatal("JWT_SECRET environment variable is required")
+	}
+	handlers.SetJwtSecret([]byte(secret))
+	
 	godotenv.Load()
 	port := "8080"
 
