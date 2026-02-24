@@ -2,7 +2,9 @@ package handlers
 
 import (
 	"encoding/json"
+	"net"
 	"net/http"
+	"net/url"
 	"strings"
 	"time"
 
@@ -36,6 +38,11 @@ func SubmitSong(w http.ResponseWriter, r *http.Request) {
 
 	if !strings.HasPrefix(req.URL, "http://") && !strings.HasPrefix(req.URL, "https://") {
 		http.Error(w, "URL must start with http:// or https://", http.StatusBadRequest)
+		return
+	}
+
+	if !validateURL(req.URL) {
+		http.Error(w, "URL does not exist or is unreachable", http.StatusBadRequest)
 		return
 	}
 
@@ -117,6 +124,42 @@ func detectPlatform(url string) string {
 	default:
 		return "other"
 	}
+}
+
+func isPrivateIP(urlStr string) bool {
+	parsed, err := url.Parse(urlStr)
+	if err != nil {
+		return true
+	}
+	host := parsed.Hostname()
+	ip := net.ParseIP(host)
+	if ip == nil {
+		// It's a domain name — resolve it
+		addrs, err := net.LookupHost(host)
+		if err != nil || len(addrs) == 0 {
+			return true
+		}
+		ip = net.ParseIP(addrs[0])
+	}
+	if ip == nil {
+		return true
+	}
+	return ip.IsLoopback() || ip.IsPrivate() || ip.IsLinkLocalUnicast()
+}
+
+func validateURL(rawURL string) bool {
+	if isPrivateIP(rawURL) {
+		return false
+	}
+	client := &http.Client{
+		Timeout: 5 * time.Second,
+	}
+	resp, err := client.Head(rawURL)
+	if err != nil {
+		return false
+	}
+	defer resp.Body.Close()
+	return resp.StatusCode >= 200 && resp.StatusCode < 400
 }
 
 func LikeSong(w http.ResponseWriter, r *http.Request) {
