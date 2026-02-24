@@ -1,0 +1,13 @@
+.git
+.env
+.gitignore
+README.md
+screenshots/
+
+# Frontend
+frontend/node_modules
+frontend/dist
+
+# Backend build artifacts
+*.exe
+*.test
