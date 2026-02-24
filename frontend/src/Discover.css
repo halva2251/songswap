@@ -215,3 +215,17 @@
 .discover-submit-button:hover {
   background: var(--accent-hover);
 }
+
+@media (max-width: 600px) {
+  .discover-container {
+    padding: 32px 16px;
+  }
+
+  .discover-empty {
+    padding-top: 40px;
+  }
+
+  .discover-title {
+    font-size: 24px;
+  }
+}

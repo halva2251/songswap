@@ -58,3 +58,9 @@
 .history-embed {
   padding: 0 14px 14px;
 }
+
+@media (max-width: 600px) {
+  .history-container {
+    padding: 24px 16px;
+  }
+}

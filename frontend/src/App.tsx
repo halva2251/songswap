@@ -34,7 +34,11 @@ function App() {
   return (
     <div className="app-container">
       <header className="app-header">
-        <div className="app-logo">
+        <div
+          className="app-logo"
+          onClick={() => setPage("discover")}
+          style={{ cursor: "pointer" }}
+        >
           song<span>swap</span>
         </div>
         <nav className="app-nav">
