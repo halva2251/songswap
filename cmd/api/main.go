@@ -19,8 +19,7 @@ func main() {
 		log.Fatal("JWT_SECRET environment variable is required")
 	}
 	handlers.SetJwtSecret([]byte(secret))
-	
-	godotenv.Load()
+
 	port := "8080"
 
 	if err := database.Connect(); err != nil {
@@ -28,8 +27,6 @@ func main() {
 	}
 	log.Println("Connected to database")
 
-	
-	// Relaxed: 10 req/sec, burst 20 — for general API
 	apiLimiter := middleware.NewRateLimiter(10, 20)
 
 	mux := http.NewServeMux()
@@ -43,12 +40,10 @@ func main() {
 	mux.HandleFunc("GET /history", middleware.AuthMiddleware(handlers.JwtSecret, handlers.History))
 	mux.HandleFunc("DELETE /songs/{id}/like", middleware.AuthMiddleware(handlers.JwtSecret, handlers.UnlikeSong))
 
-	// Middleware chain: CORS → rate limit → router
-	// Auth routes get the strict limiter
 	handler := middleware.CORS(apiLimiter.Limit(mux))
 
 	log.Printf("Server starting on port %s", port)
-	if err := http.ListenAndServe(":"+port, handler); err != nil {
+	if err := http.ListenAndServe("0.0.0.0:"+port, handler); err != nil {
 		log.Fatal(err)
 	}
 }
