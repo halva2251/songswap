@@ -67,6 +67,15 @@ func SubmitSong(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	// If a chain_id was provided, add the song to that chain
+	if req.ChainID != nil {
+		database.DB.Exec(`
+			INSERT INTO chain_songs (chain_id, song_id, added_by)
+			VALUES ($1, $2, $3)
+			ON CONFLICT (chain_id, song_id) DO NOTHING
+		`, *req.ChainID, song.ID, song.SubmittedBy)
+	}
+
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(http.StatusCreated)
 	json.NewEncoder(w).Encode(song)
@@ -80,17 +89,35 @@ func Discover(w http.ResponseWriter, r *http.Request) {
 	}
 
 	var song models.Song
+	var err error
 
-	// Get a random song the user hasn't seen yet
-	err := database.DB.QueryRow(`
-		SELECT id, url, platform, context_crumb, created_at
-		FROM songs
-		WHERE id NOT IN (
-			SELECT song_id FROM discoveries WHERE user_id = $1
-		)
-		ORDER BY RANDOM()
-		LIMIT 1
-	`, userID).Scan(&song.ID, &song.URL, &song.Platform, &song.ContextCrumb, &song.CreatedAt)
+	chainID := r.URL.Query().Get("chain")
+
+	if chainID != "" {
+		// Discover from a specific chain
+		err = database.DB.QueryRow(`
+			SELECT s.id, s.url, s.platform, s.context_crumb, s.created_at
+			FROM songs s
+			JOIN chain_songs cs ON s.id = cs.song_id
+			WHERE cs.chain_id = $1
+			AND s.id NOT IN (
+				SELECT song_id FROM discoveries WHERE user_id = $2
+			)
+			ORDER BY RANDOM()
+			LIMIT 1
+		`, chainID, userID).Scan(&song.ID, &song.URL, &song.Platform, &song.ContextCrumb, &song.CreatedAt)
+	} else {
+		// Discover from the main pool
+		err = database.DB.QueryRow(`
+			SELECT id, url, platform, context_crumb, created_at
+			FROM songs
+			WHERE id NOT IN (
+				SELECT song_id FROM discoveries WHERE user_id = $1
+			)
+			ORDER BY RANDOM()
+			LIMIT 1
+		`, userID).Scan(&song.ID, &song.URL, &song.Platform, &song.ContextCrumb, &song.CreatedAt)
+	}
 
 	if err != nil {
 		http.Error(w, "No new songs to discover", http.StatusNotFound)

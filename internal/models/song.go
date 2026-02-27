@@ -14,4 +14,5 @@ type Song struct {
 type SubmitSongRequest struct {
 	URL          string  `json:"url"`
 	ContextCrumb *string `json:"context_crumb,omitempty"`
+	ChainID      *int64  `json:"chain_id,omitempty"`
 }

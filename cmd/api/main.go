@@ -39,6 +39,12 @@ func main() {
 	mux.HandleFunc("POST /songs/{id}/like", middleware.AuthMiddleware(handlers.JwtSecret, handlers.LikeSong))
 	mux.HandleFunc("GET /history", middleware.AuthMiddleware(handlers.JwtSecret, handlers.History))
 	mux.HandleFunc("DELETE /songs/{id}/like", middleware.AuthMiddleware(handlers.JwtSecret, handlers.UnlikeSong))
+	// Chain routes
+	mux.HandleFunc("GET /chains", handlers.ListChains)
+	mux.HandleFunc("POST /chains", middleware.AuthMiddleware(handlers.JwtSecret, handlers.CreateChain))
+	mux.HandleFunc("GET /chains/{id}/songs", handlers.GetChainSongs)
+	mux.HandleFunc("POST /chains/{id}/songs", middleware.AuthMiddleware(handlers.JwtSecret, handlers.AddSongToChain))
+	mux.HandleFunc("DELETE /chains/{id}/songs/{songId}", middleware.AuthMiddleware(handlers.JwtSecret, handlers.RemoveSongFromChain))
 
 	handler := middleware.CORS(apiLimiter.Limit(mux))
 
