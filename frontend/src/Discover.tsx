@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { discover, likeSong, submitSong } from "./api";
+import type { Chain } from "./api";
 import "./Discover.css";
 import EmbedPlayer from "./EmbedPlayer";
 
@@ -13,9 +14,15 @@ interface Song {
 
 interface DiscoverProps {
   token: string;
+  activeChain?: Chain | null;
+  onClearChain?: () => void;
 }
 
-export default function Discover({ token }: DiscoverProps) {
+export default function Discover({
+  token,
+  activeChain,
+  onClearChain,
+}: DiscoverProps) {
   const [song, setSong] = useState<Song | null>(null);
   const [error, setError] = useState("");
   const [liked, setLiked] = useState(false);
@@ -28,7 +35,7 @@ export default function Discover({ token }: DiscoverProps) {
   async function handleDiscover() {
     setError("");
     try {
-      const data = await discover(token);
+      const data = await discover(token, activeChain?.id);
       setSong(data);
       setLiked(false);
     } catch (err) {
@@ -49,7 +56,7 @@ export default function Discover({ token }: DiscoverProps) {
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
     try {
-      await submitSong(url, context || undefined);
+      await submitSong(url, context || undefined, activeChain?.id);
       setUrl("");
       setContext("");
       setShowSubmit(false);
@@ -60,6 +67,20 @@ export default function Discover({ token }: DiscoverProps) {
 
   return (
     <div className="discover-container">
+      {activeChain && (
+        <div className="chain-detail-header">
+          <button onClick={onClearChain} className="chain-back-button">
+            ← all songs
+          </button>
+          <div className="chain-detail-info">
+            <div className="chain-detail-name">{activeChain.name}</div>
+            {activeChain.description && (
+              <p className="chain-detail-desc">{activeChain.description}</p>
+            )}
+          </div>
+        </div>
+      )}
+
       {song ? (
         <div className="discover-song-card">
           {song.context_crumb && (
@@ -83,8 +104,16 @@ export default function Discover({ token }: DiscoverProps) {
       ) : (
         <div className="discover-empty">
           <div>
-            <h2 className="discover-title">discover a song</h2>
-            <p className="discover-subtitle">from a stranger, for you</p>
+            <h2 className="discover-title">
+              {activeChain
+                ? `discover from "${activeChain.name}"`
+                : "discover a song"}
+            </h2>
+            <p className="discover-subtitle">
+              {activeChain
+                ? `${activeChain.song_count} songs in this chain`
+                : "from a stranger, for you"}
+            </p>
           </div>
           <button onClick={handleDiscover} className="discover-big-button">
             discover
@@ -129,7 +158,9 @@ export default function Discover({ token }: DiscoverProps) {
             onClick={() => setShowSubmit(true)}
             className="discover-text-button"
           >
-            + add a song to the pool
+            {activeChain
+              ? `+ add a song to "${activeChain.name}"`
+              : "+ add a song to the pool"}
           </button>
         )}
       </div>

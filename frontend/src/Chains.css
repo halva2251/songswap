@@ -1,0 +1,241 @@
+.chains-container {
+  max-width: 520px;
+  margin: 0 auto;
+  padding: 60px 20px;
+}
+
+.chains-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 28px;
+}
+
+.chains-title {
+  font-family: "Syne", sans-serif;
+  font-weight: 800;
+  font-size: 28px;
+  letter-spacing: -0.5px;
+}
+
+.chains-subtitle {
+  color: var(--text-muted);
+  font-size: 15px;
+  margin-top: 4px;
+}
+
+.chains-create-toggle {
+  font-family: "DM Sans", sans-serif;
+  font-size: 13px;
+  font-weight: 600;
+  padding: 8px 20px;
+  border: 1px solid var(--border);
+  border-radius: 50px;
+  background: transparent;
+  color: var(--text-muted);
+  cursor: pointer;
+  transition: all 0.2s;
+  white-space: nowrap;
+}
+
+.chains-create-toggle:hover {
+  border-color: var(--accent);
+  color: var(--accent);
+}
+
+.chains-create-form {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-bottom: 24px;
+  animation: fadeUp 0.2s ease;
+}
+
+.chains-input {
+  font-family: "DM Sans", sans-serif;
+  width: 100%;
+  padding: 12px 16px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  background: var(--bg);
+  color: var(--text);
+  font-size: 14px;
+  outline: none;
+  transition: border-color 0.2s;
+}
+
+.chains-input:focus {
+  border-color: var(--accent);
+}
+
+.chains-input::placeholder {
+  color: var(--text-dim);
+}
+
+.chains-create-button {
+  font-family: "DM Sans", sans-serif;
+  font-size: 13px;
+  font-weight: 600;
+  padding: 10px 20px;
+  border: none;
+  border-radius: 8px;
+  background: var(--accent);
+  color: #000;
+  cursor: pointer;
+  transition: background 0.2s;
+  align-self: flex-end;
+}
+
+.chains-create-button:hover {
+  background: var(--accent-hover);
+}
+
+.chains-error {
+  color: #ef4444;
+  margin-bottom: 16px;
+  text-align: center;
+  font-size: 14px;
+}
+
+.chains-loading {
+  text-align: center;
+  color: var(--text-muted);
+  padding-top: 80px;
+  font-size: 14px;
+}
+
+.chains-empty {
+  text-align: center;
+  padding-top: 60px;
+  color: var(--text-dim);
+  font-size: 14px;
+}
+
+.chains-list {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.chain-card {
+  display: block;
+  width: 100%;
+  text-align: left;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 16px 20px;
+  cursor: pointer;
+  transition: all 0.2s;
+  font-family: "DM Sans", sans-serif;
+  color: var(--text);
+}
+
+.chain-card:hover {
+  border-color: var(--border-light);
+  transform: translateY(-1px);
+}
+
+.chain-card-top {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.chain-name {
+  font-weight: 600;
+  font-size: 15px;
+}
+
+.chain-count {
+  font-size: 12px;
+  color: var(--text-dim);
+  background: var(--border-light);
+  padding: 3px 10px;
+  border-radius: 50px;
+}
+
+.chain-description {
+  color: var(--text-muted);
+  font-size: 13px;
+  margin-top: 6px;
+  line-height: 1.4;
+}
+
+.chain-creator {
+  color: var(--text-dim);
+  font-size: 12px;
+  margin-top: 8px;
+}
+
+/* Chain detail view (discover within a chain) */
+.chain-detail-header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 32px;
+}
+
+.chain-back-button {
+  font-family: "DM Sans", sans-serif;
+  font-size: 13px;
+  padding: 6px 14px;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  background: transparent;
+  color: var(--text-muted);
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.chain-back-button:hover {
+  border-color: var(--border-light);
+  color: var(--text);
+}
+
+.chain-detail-info {
+  flex: 1;
+}
+
+.chain-detail-name {
+  font-family: "Syne", sans-serif;
+  font-weight: 800;
+  font-size: 20px;
+  letter-spacing: -0.3px;
+}
+
+.chain-detail-desc {
+  color: var(--text-muted);
+  font-size: 13px;
+  margin-top: 2px;
+}
+
+@keyframes fadeUp {
+  from {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@media (max-width: 600px) {
+  .chains-container {
+    padding: 32px 16px;
+  }
+
+  .chains-title {
+    font-size: 24px;
+  }
+
+  .chains-header {
+    flex-direction: column;
+    gap: 16px;
+  }
+}
