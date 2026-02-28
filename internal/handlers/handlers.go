@@ -202,10 +202,11 @@ func LikeSong(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	result, err := database.DB.Exec(`
-		UPDATE discoveries
-		SET liked = true
-		WHERE user_id = $1 AND song_id = $2
+	// Ensure a discovery record exists (for chain likes)
+	_, err := database.DB.Exec(`
+		INSERT INTO discoveries (user_id, song_id)
+		VALUES ($1, $2)
+		ON CONFLICT DO NOTHING
 	`, userID, songID)
 
 	if err != nil {
@@ -213,9 +214,15 @@ func LikeSong(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	rows, _ := result.RowsAffected()
-	if rows == 0 {
-		http.Error(w, "Song not found in your discoveries", http.StatusNotFound)
+	// Now set liked = true
+	_, err = database.DB.Exec(`
+		UPDATE discoveries
+		SET liked = true
+		WHERE user_id = $1 AND song_id = $2
+	`, userID, songID)
+
+	if err != nil {
+		http.Error(w, "Failed to like song", http.StatusInternalServerError)
 		return
 	}
 

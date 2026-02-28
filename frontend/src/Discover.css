@@ -229,3 +229,29 @@
     font-size: 24px;
   }
 }
+
+.chain-controls {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+}
+
+.chain-song-count {
+  font-size: 14px;
+  color: var(--text-muted);
+}
+
+.chain-song-list {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.discover-song-card.highlighted {
+  border-color: var(--accent);
+  box-shadow: 0 0 20px rgba(30, 215, 96, 0.15);
+  transition:
+    border-color 0.3s,
+    box-shadow 0.3s;
+}

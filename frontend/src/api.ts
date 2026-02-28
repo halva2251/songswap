@@ -94,6 +94,12 @@ export async function getChains(): Promise<Chain[]> {
   return res.json();
 }
 
+export async function getChainSongs(chainId: number) {
+  const res = await fetch(`${API_URL}/chains/${chainId}/songs`);
+  if (!res.ok) throw new Error(await res.text());
+  return res.json();
+}
+
 export async function createChain(
   token: string,
   name: string,

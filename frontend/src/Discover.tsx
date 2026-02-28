@@ -1,5 +1,5 @@
-import { useState } from "react";
-import { discover, likeSong, submitSong } from "./api";
+import { useState, useEffect, useRef } from "react";
+import { discover, likeSong, submitSong, getChainSongs } from "./api";
 import type { Chain } from "./api";
 import "./Discover.css";
 import EmbedPlayer from "./EmbedPlayer";
@@ -32,10 +32,54 @@ export default function Discover({
   const [url, setUrl] = useState("");
   const [context, setContext] = useState("");
 
+  // For chain song list
+  const [chainSongs, setChainSongs] = useState<Song[]>([]);
+  const [chainLiked, setChainLiked] = useState<Set<number>>(new Set());
+  const [highlightedId, setHighlightedId] = useState<number | null>(null);
+  const songRefs = useRef<Map<number, HTMLDivElement>>(new Map());
+
+  useEffect(() => {
+    if (activeChain) {
+      loadChainSongs();
+    } else {
+      setChainSongs([]);
+    }
+  }, [activeChain]);
+
+  async function loadChainSongs() {
+    if (!activeChain) return;
+    try {
+      const data = await getChainSongs(activeChain.id);
+      setChainSongs(data);
+    } catch {
+      setError("Failed to load chain songs");
+    }
+  }
+
+  function handleShuffle() {
+    if (chainSongs.length === 0) return;
+    const random = chainSongs[Math.floor(Math.random() * chainSongs.length)];
+    setHighlightedId(random.id);
+    const el = songRefs.current.get(random.id);
+    if (el) {
+      el.scrollIntoView({ behavior: "smooth", block: "center" });
+    }
+    setTimeout(() => setHighlightedId(null), 2000);
+  }
+
+  async function handleChainLike(songId: number) {
+    try {
+      await likeSong(token, songId);
+      setChainLiked((prev) => new Set(prev).add(songId));
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Failed to like");
+    }
+  }
+
   async function handleDiscover() {
     setError("");
     try {
-      const data = await discover(token, activeChain?.id);
+      const data = await discover(token);
       setSong(data);
       setLiked(false);
     } catch (err) {
@@ -60,6 +104,10 @@ export default function Discover({
       setUrl("");
       setContext("");
       setShowSubmit(false);
+      // Refresh the chain song list if we're in a chain
+      if (activeChain) {
+        loadChainSongs();
+      }
     } catch (err) {
       setError(err instanceof Error ? err.message : "Failed to submit");
     }
@@ -81,7 +129,53 @@ export default function Discover({
         </div>
       )}
 
-      {song ? (
+      {activeChain ? (
+        <>
+          <div className="chain-controls">
+            <span className="chain-song-count">
+              {chainSongs.length} {chainSongs.length === 1 ? "song" : "songs"}
+            </span>
+            {chainSongs.length > 0 && (
+              <button onClick={handleShuffle} className="discover-big-button">
+                shuffle
+              </button>
+            )}
+          </div>
+
+          {chainSongs.length === 0 ? (
+            <div className="chains-empty">
+              <p>no songs in this chain yet</p>
+            </div>
+          ) : (
+            <div className="chain-song-list">
+              {chainSongs.map((s) => (
+                <div
+                  key={s.id}
+                  ref={(el) => {
+                    if (el) songRefs.current.set(s.id, el);
+                  }}
+                  className={`discover-song-card ${highlightedId === s.id ? "highlighted" : ""}`}
+                >
+                  {s.context_crumb && (
+                    <p className="discover-context">"{s.context_crumb}"</p>
+                  )}
+                  <div className="discover-embed">
+                    <EmbedPlayer url={s.url} />
+                  </div>
+                  <div className="discover-actions">
+                    <button
+                      onClick={() => handleChainLike(s.id)}
+                      className={`discover-like-button ${chainLiked.has(s.id) ? "liked" : ""}`}
+                    >
+                      {chainLiked.has(s.id) ? "♥ liked" : "♡ like"}
+                    </button>
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
+        </>
+      ) : song ? (
         <div className="discover-song-card">
           {song.context_crumb && (
             <p className="discover-context">"{song.context_crumb}"</p>
@@ -104,16 +198,8 @@ export default function Discover({
       ) : (
         <div className="discover-empty">
           <div>
-            <h2 className="discover-title">
-              {activeChain
-                ? `discover from "${activeChain.name}"`
-                : "discover a song"}
-            </h2>
-            <p className="discover-subtitle">
-              {activeChain
-                ? `${activeChain.song_count} songs in this chain`
-                : "from a stranger, for you"}
-            </p>
+            <h2 className="discover-title">discover a song</h2>
+            <p className="discover-subtitle">from a stranger, for you</p>
           </div>
           <button onClick={handleDiscover} className="discover-big-button">
             discover
