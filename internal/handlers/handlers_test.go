@@ -258,3 +258,27 @@ func TestCreateChain_Unauthorized(t *testing.T) {
 		t.Errorf("expected status 401, got %d", w.Code)
 	}
 }
+
+func TestDetectPlatform(t *testing.T) {
+	tests := []struct {
+		name     string
+		url      string
+		expected string
+	}{
+		{"YouTube full URL", "https://www.youtube.com/watch?v=abc123", "youtube"},
+		{"YouTube short URL", "https://youtu.be/abc123", "youtube"},
+		{"Spotify track", "https://open.spotify.com/track/abc123", "spotify"},
+		{"SoundCloud", "https://soundcloud.com/artist/track", "soundcloud"},
+		{"Unknown site", "https://bandcamp.com/track/something", "other"},
+		{"Mixed case", "https://WWW.YOUTUBE.COM/watch?v=abc", "youtube"},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			result := detectPlatform(tt.url)
+			if result != tt.expected {
+				t.Errorf("detectPlatform(%q) = %q, want %q", tt.url, result, tt.expected)
+			}
+		})
+	}
+}
