@@ -1,10 +1,13 @@
 package handlers
 
 import (
+	"context"
 	"net/http"
 	"net/http/httptest"
 	"strings"
 	"testing"
+
+	"github.com/halva/songswap/internal/middleware"
 )
 
 func TestHealth(t *testing.T) {
@@ -172,5 +175,86 @@ func TestRegister_InvalidJSON(t *testing.T) {
 
 	if w.Code != http.StatusBadRequest {
 		t.Errorf("expected status 400, got %d", w.Code)
+	}
+}
+
+func TestCreateChain_InvalidJSON(t *testing.T) {
+	body := strings.NewReader(`not json`)
+	req := httptest.NewRequest("POST", "/chains", body)
+	req.Header.Set("Content-Type", "application/json")
+	w := httptest.NewRecorder()
+
+	// Need to set user context since CreateChain checks for auth
+	ctx := context.WithValue(req.Context(), middleware.UserIDKey, int64(1))
+	req = req.WithContext(ctx)
+
+	CreateChain(w, req)
+
+	if w.Code != http.StatusBadRequest {
+		t.Errorf("expected status 400, got %d", w.Code)
+	}
+}
+
+func TestCreateChain_EmptyName(t *testing.T) {
+	body := strings.NewReader(`{"name":""}`)
+	req := httptest.NewRequest("POST", "/chains", body)
+	req.Header.Set("Content-Type", "application/json")
+	w := httptest.NewRecorder()
+
+	ctx := context.WithValue(req.Context(), middleware.UserIDKey, int64(1))
+	req = req.WithContext(ctx)
+
+	CreateChain(w, req)
+
+	if w.Code != http.StatusBadRequest {
+		t.Errorf("expected status 400, got %d", w.Code)
+	}
+}
+
+func TestCreateChain_NameTooLong(t *testing.T) {
+	longName := strings.Repeat("a", 51)
+	body := strings.NewReader(`{"name":"` + longName + `"}`)
+	req := httptest.NewRequest("POST", "/chains", body)
+	req.Header.Set("Content-Type", "application/json")
+	w := httptest.NewRecorder()
+
+	ctx := context.WithValue(req.Context(), middleware.UserIDKey, int64(1))
+	req = req.WithContext(ctx)
+
+	CreateChain(w, req)
+
+	if w.Code != http.StatusBadRequest {
+		t.Errorf("expected status 400, got %d", w.Code)
+	}
+}
+
+func TestCreateChain_DescriptionTooLong(t *testing.T) {
+	longDesc := strings.Repeat("a", 201)
+	body := strings.NewReader(`{"name":"valid chain","description":"` + longDesc + `"}`)
+	req := httptest.NewRequest("POST", "/chains", body)
+	req.Header.Set("Content-Type", "application/json")
+	w := httptest.NewRecorder()
+
+	ctx := context.WithValue(req.Context(), middleware.UserIDKey, int64(1))
+	req = req.WithContext(ctx)
+
+	CreateChain(w, req)
+
+	if w.Code != http.StatusBadRequest {
+		t.Errorf("expected status 400, got %d", w.Code)
+	}
+}
+
+func TestCreateChain_Unauthorized(t *testing.T) {
+	body := strings.NewReader(`{"name":"test chain"}`)
+	req := httptest.NewRequest("POST", "/chains", body)
+	req.Header.Set("Content-Type", "application/json")
+	w := httptest.NewRecorder()
+
+	// No user context set — should fail
+	CreateChain(w, req)
+
+	if w.Code != http.StatusUnauthorized {
+		t.Errorf("expected status 401, got %d", w.Code)
 	}
 }
