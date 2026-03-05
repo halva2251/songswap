@@ -34,7 +34,7 @@ func main() {
 	mux.HandleFunc("GET /health", handlers.Health)
 	mux.HandleFunc("POST /register", handlers.Register)
 	mux.HandleFunc("POST /login", handlers.Login)
-	mux.HandleFunc("POST /songs", handlers.SubmitSong)
+	mux.HandleFunc("POST /songs", middleware.AuthMiddleware(handlers.JwtSecret, handlers.SubmitSong))
 	mux.HandleFunc("GET /discover", middleware.AuthMiddleware(handlers.JwtSecret, handlers.Discover))
 	mux.HandleFunc("POST /songs/{id}/like", middleware.AuthMiddleware(handlers.JwtSecret, handlers.LikeSong))
 	mux.HandleFunc("GET /history", middleware.AuthMiddleware(handlers.JwtSecret, handlers.History))

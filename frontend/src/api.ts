@@ -21,13 +21,17 @@ export async function login(username: string, password: string) {
 }
 
 export async function submitSong(
+  token: string,
   url: string,
   contextCrumb?: string,
   chainId?: number,
 ) {
   const res = await authFetch(`${API_URL}/songs`, {
     method: "POST",
-    headers: { "Content-Type": "application/json" },
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${token}`,
+    },
     body: JSON.stringify({
       url,
       context_crumb: contextCrumb || null,

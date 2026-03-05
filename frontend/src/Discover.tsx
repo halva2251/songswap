@@ -100,7 +100,7 @@ export default function Discover({
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
     try {
-      await submitSong(url, context || undefined, activeChain?.id);
+      await submitSong(token, url, context || undefined, activeChain?.id);
       setUrl("");
       setContext("");
       setShowSubmit(false);

@@ -2,6 +2,7 @@ package handlers
 
 import (
 	"encoding/json"
+	"log"
 	"net"
 	"net/http"
 	"net/url"
@@ -19,6 +20,12 @@ func Health(w http.ResponseWriter, r *http.Request) {
 }
 
 func SubmitSong(w http.ResponseWriter, r *http.Request) {
+	userID, ok := r.Context().Value(middleware.UserIDKey).(int64)
+	if !ok {
+		http.Error(w, "Unauthorized", http.StatusUnauthorized)
+		return
+	}
+	
 	var req models.SubmitSongRequest
 
 	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
@@ -55,17 +62,18 @@ func SubmitSong(w http.ResponseWriter, r *http.Request) {
 
 	var song models.Song
 	err := database.DB.QueryRow(`
-		INSERT INTO songs (url, platform, context_crumb)
-		VALUES ($1, $2, $3)
+		INSERT INTO songs (url, platform, context_crumb, submitted_by)
+		VALUES ($1, $2, $3, $4)
 		RETURNING id, url, platform, context_crumb, created_at
-	`, req.URL, platform, req.ContextCrumb).Scan(
+	`, req.URL, platform, req.ContextCrumb, userID).Scan(
 		&song.ID, &song.URL, &song.Platform, &song.ContextCrumb, &song.CreatedAt,
 	)
 
 	if err != nil {
-		http.Error(w, "Failed to save song", http.StatusInternalServerError)
-		return
-	}
+    log.Println("SubmitSong DB error:", err)
+    http.Error(w, "Failed to save song", http.StatusInternalServerError)
+    return
+}
 
 	// If a chain_id was provided, add the song to that chain
 	if req.ChainID != nil {
@@ -73,7 +81,7 @@ func SubmitSong(w http.ResponseWriter, r *http.Request) {
 			INSERT INTO chain_songs (chain_id, song_id, added_by)
 			VALUES ($1, $2, $3)
 			ON CONFLICT (chain_id, song_id) DO NOTHING
-		`, *req.ChainID, song.ID, song.SubmittedBy)
+		`, *req.ChainID, song.ID, userID)
 	}
 
 	w.Header().Set("Content-Type", "application/json")
