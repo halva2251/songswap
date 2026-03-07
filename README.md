@@ -27,8 +27,8 @@ Spotify's algorithm keeps recommending the same stuff. SongSwap breaks that loop
 | Backend  | Go (standard library `net/http`)           |
 | Database | PostgreSQL                                 |
 | Auth     | JWT (HS256) with bcrypt password hashing   |
-| Deploy   | Fly.io (backend), Vercel (frontend)        |
-| CI/CD    | GitHub Actions → Fly.io auto-deploy        |
+| Proxy    | NGINX (reverse proxy, eliminates CORS)     |
+| CI/CD    | GitHub Actions → GitHub Container Registry |
 | DevOps   | Docker, Docker Compose, multi-stage builds |
 
 ## Security & Backend Design
@@ -99,64 +99,85 @@ songswap/
 │       └── api.ts             # API client with auto-logout on 401
 ├── Dockerfile.backend         # Multi-stage Go build (alpine)
 ├── Dockerfile.frontend        # Multi-stage Node build + nginx
-├── docker-compose.yml         # Full stack: backend + postgres + frontend
-├── fly.toml                   # Fly.io deployment config
-├── nginx.conf                 # Frontend SPA routing
+├── docker-compose.yml         # Full stack local build
+├── docker-compose.prod.yml    # Production: pulls pre-built images from ghcr.io
+├── nginx.conf                 # Reverse proxy + SPA routing
+├── .devcontainer/
+│   ├── devcontainer.json      # VS Code Dev Container config
+│   └── docker-compose.dev.yml # Dev environment: Go + Node + PostgreSQL
 └── .github/workflows/
-    └── fly-deploy.yml         # CI/CD: auto-deploy on push to main
+    └── build-and-push.yml     # CI/CD: build images → push to ghcr.io
 ```
-
 ## Getting Started
 
-### Prerequisites
+### Quick Start (no build tools needed)
 
-- Go 1.24+
-- Node.js 18+
-- PostgreSQL 14+
+The fastest way to run SongSwap, just pulls pre-built images from GitHub Container Registry:
 
-### Database Setup
-
+1. Clone the repo:
 ```bash
-sudo -u postgres createdb songswap
-sudo -u postgres psql -d songswap -f migrations/001_initial.sql
-sudo -u postgres psql -d songswap -f migrations/002_chains.sql
-sudo -u postgres psql -d songswap -f migrations/003_discoveries_unique.sql
+git clone https://github.com/halva2251/songswap.git
+cd songswap
 ```
 
-### Environment
-
-Create a `.env` file in the project root:
-
+2. Create a `.env` file:
 ```
-DATABASE_URL=postgres://user:password@localhost:5432/songswap?sslmode=disable
 JWT_SECRET=your-secret-here
+DB_PASSWORD=your-db-password
 ```
 
-### Run
-
-**Backend:**
-
+3. Start everything:
 ```bash
+docker compose -f docker-compose.prod.yml up -d
+```
+
+The app is available at `http://localhost`. That's it. no Go, Node, or PostgreSQL installation required.
+
+### Local Development
+
+For development with hot-reloading, open the project in VS Code and use the Dev Container setup:
+
+1. Install the [Dev Containers](https://marketplace.visualstudio.com/items?itemName=ms-vscode-remote.remote-containers) extension
+2. Open the project and run `Dev Containers: Reopen in Container`
+3. In the container terminal, start the backend and frontend:
+```bash
+# Terminal 1 — backend
 go run cmd/api/main.go
-```
 
-**Frontend:**
-
-```bash
+# Terminal 2 — frontend
 cd frontend
-npm install
 npm run dev
 ```
 
-The app runs at `http://localhost:5173` with the API at `http://localhost:8080`.
+The frontend runs at `http://localhost:5173` and the backend at `http://localhost:8080`.
 
-### Docker Compose (full stack)
+### Docker Compose (local build)
 
+To build and run everything locally from source:
 ```bash
 JWT_SECRET=your-secret-here docker compose up --build
 ```
 
-This spins up the backend, a Postgres instance, and the frontend behind nginx. The app is available at `http://localhost:3000`.
+The app is available at `http://localhost:3000` behind an NGINX reverse proxy.
+
+## Architecture
+```
+Production:  Browser → NGINX (:80) → /api/* → Go backend → PostgreSQL
+                                   → /*    → React static files
+
+Development: Browser → Vite (:5173) → Go backend (:8080) → PostgreSQL
+```
+
+NGINX acts as a reverse proxy in production, routing API requests to the backend and serving the React frontend. This eliminates CORS entirely, the browser only talks to one origin.
+
+## CI/CD
+
+Every push to `main` triggers a GitHub Actions workflow that builds Docker images and pushes them to GitHub Container Registry:
+
+- `ghcr.io/halva2251/songswap-backend:latest`
+- `ghcr.io/halva2251/songswap-frontend:latest`
+
+Images are also tagged with the git commit SHA for traceability.
 
 ## API Endpoints
 

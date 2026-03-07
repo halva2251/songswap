@@ -1,0 +1,39 @@
+name: songswap
+
+services:
+  frontend:
+    image: ghcr.io/halva2251/songswap-frontend:latest
+    depends_on:
+      - backend
+    ports:
+      - "80:80"
+    restart: unless-stopped
+
+  backend:
+    image: ghcr.io/halva2251/songswap-backend:latest
+    depends_on:
+      db:
+        condition: service_healthy
+    environment:
+      DATABASE_URL: postgres://songswap:${DB_PASSWORD}@db:5432/songswap?sslmode=disable
+      JWT_SECRET: ${JWT_SECRET}
+    restart: unless-stopped
+
+  db:
+    image: postgres:16-alpine
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+      - ./migrations:/docker-entrypoint-initdb.d
+    environment:
+      POSTGRES_DB: songswap
+      POSTGRES_USER: songswap
+      POSTGRES_PASSWORD: ${DB_PASSWORD}
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U songswap -d songswap"]
+      interval: 2s
+      timeout: 5s
+      retries: 10
+
+volumes:
+  pgdata:
