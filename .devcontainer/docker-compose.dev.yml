@@ -1,0 +1,34 @@
+name: songswap-dev
+
+services:
+  devcontainer:
+    image: golang:1.24
+    volumes:
+      - ..:/workspace:cached
+    working_dir: /workspace
+    command: sleep infinity
+    depends_on:
+      db:
+        condition: service_healthy
+    environment:
+      DATABASE_URL: postgres://songswap:songswap_dev@db:5432/songswap?sslmode=disable
+      JWT_SECRET: dev-secret
+      CORS_ORIGINS: "http://localhost:5173"
+
+  db:
+    image: postgres:16-alpine
+    volumes:
+      - pgdata-dev:/var/lib/postgresql/data
+      - ../migrations:/docker-entrypoint-initdb.d
+    environment:
+      POSTGRES_DB: songswap
+      POSTGRES_USER: songswap
+      POSTGRES_PASSWORD: songswap_dev
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U songswap -d songswap"]
+      interval: 2s
+      timeout: 5s
+      retries: 10
+
+volumes:
+  pgdata-dev:

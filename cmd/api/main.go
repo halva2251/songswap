@@ -48,7 +48,7 @@ func main() {
 
 	handler := middleware.CORS(apiLimiter.Limit(mux))
 
-	log.Printf("Server starting on port %s", port)
+	log.Printf("SongSwap API starting on port %s", port)
 	if err := http.ListenAndServe("0.0.0.0:"+port, handler); err != nil {
 		log.Fatal(err)
 	}
