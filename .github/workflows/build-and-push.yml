@@ -32,8 +32,8 @@ jobs:
           file: Dockerfile.backend
           push: true
           tags: |
-            ghcr.io/halva/songswap-backend:latest
-            ghcr.io/halva/songswap-backend:${{ github.sha }}
+            ghcr.io/halva2251/songswap-backend:latest
+            ghcr.io/halva2251/songswap-backend:${{ github.sha }}
 
       - name: Build and push frontend
         uses: docker/build-push-action@v6
@@ -44,7 +44,7 @@ jobs:
           build-args: |
             VITE_API_URL=/api
           tags: |
-            ghcr.io/halva/songswap-frontend:latest
-            ghcr.io/halva/songswap-frontend:${{ github.sha }}
+            ghcr.io/halva2251/songswap-frontend:latest
+            ghcr.io/halva2251/songswap-frontend:${{ github.sha }}
 
             
