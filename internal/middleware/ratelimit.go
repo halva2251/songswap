@@ -3,6 +3,7 @@ package middleware
 import (
 	"net"
 	"net/http"
+	"strings"
 	"sync"
 	"time"
 
@@ -61,7 +62,7 @@ func (rl *RateLimiter) cleanup() {
 
 func (rl *RateLimiter) Limit(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		ip, _, _ := net.SplitHostPort(r.RemoteAddr)
+		ip := realIP(r)
 
 		if !rl.getClient(ip).Allow() {
 			http.Error(w, "rate limit exceeded", http.StatusTooManyRequests)
@@ -70,4 +71,25 @@ func (rl *RateLimiter) Limit(next http.Handler) http.Handler {
 
 		next.ServeHTTP(w, r)
 	})
+}
+
+func realIP(r *http.Request) string {
+	// Cloudflare Tunnel sets this to the actual client IP
+	if ip := r.Header.Get("CF-Connecting-IP"); ip != "" {
+		return ip
+	}
+	// Nginx forwards this from $remote_addr
+	if ip := r.Header.Get("X-Real-IP"); ip != "" {
+		return ip
+	}
+	// Standard proxy header, take the first (leftmost) IP
+	if xff := r.Header.Get("X-Forwarded-For"); xff != "" {
+		if i := strings.Index(xff, ","); i != -1 {
+			return strings.TrimSpace(xff[:i])
+		}
+		return xff
+	}
+	// Fallback for local dev (no proxy)
+	ip, _, _ := net.SplitHostPort(r.RemoteAddr)
+	return ip
 }
