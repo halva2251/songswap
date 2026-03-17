@@ -85,3 +85,33 @@
   color: var(--accent);
   cursor: pointer;
 }
+
+.auth-divider {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  width: 100%;
+  max-width: 320px;
+  margin: 20px 0;
+  color: var(--text-dim);
+  font-size: 13px;
+}
+
+.auth-divider::before,
+.auth-divider::after {
+  content: "";
+  flex: 1;
+  height: 1px;
+  background: var(--border);
+}
+
+.auth-button-lastfm {
+  width: 100%;
+  max-width: 320px;
+  background: #d51007;
+  color: #fff;
+}
+
+.auth-button-lastfm:hover {
+  background: #b30d06;
+}

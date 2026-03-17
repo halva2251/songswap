@@ -53,6 +53,21 @@ export default function Auth({ onLogin }: AuthProps) {
         </button>
       </form>
 
+      <div className="auth-divider">
+        <span>or</span>
+      </div>
+
+      <button
+        className="auth-button auth-button-lastfm"
+        onClick={() => {
+          const apiUrl =
+            import.meta.env.VITE_API_URL || "http://localhost:8080";
+          window.location.href = `${apiUrl}/auth/lastfm`;
+        }}
+      >
+        sign in with last.fm
+      </button>
+
       <p className="auth-switch">
         {isRegister ? "already have an account? " : "don't have an account? "}
         <span onClick={() => setIsRegister(!isRegister)} className="auth-link">

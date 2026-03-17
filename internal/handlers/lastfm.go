@@ -30,12 +30,11 @@ func LastfmStart(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// Build the callback URL based on the request
-	scheme := "http"
-	if r.TLS != nil || r.Header.Get("X-Forwarded-Proto") == "https" {
-		scheme = "https"
+	callbackURL := os.Getenv("LASTFM_CALLBACK_URL")
+	if callbackURL == "" {
+		http.Error(w, "Last.fm callback URL not configured", http.StatusInternalServerError)
+		return
 	}
-	callbackURL := fmt.Sprintf("%s://%s/api/auth/lastfm/callback", scheme, r.Host)
 
 	authURL := fmt.Sprintf(
 		"https://www.last.fm/api/auth/?api_key=%s&cb=%s",
@@ -153,18 +152,23 @@ func LastfmCallback(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Redirect to frontend with token in fragment
-	// The fragment (#) is never sent to the server, keeping the token client-side only
-	scheme := "http"
-	if r.TLS != nil || r.Header.Get("X-Forwarded-Proto") == "https" {
-		scheme = "https"
+	frontendURL := os.Getenv("FRONTEND_URL")
+	if frontendURL == "" {
+		// Fallback: assume same origin (works behind Nginx)
+		scheme := "http"
+		if r.TLS != nil || r.Header.Get("X-Forwarded-Proto") == "https" {
+			scheme = "https"
+		}
+		frontendURL = fmt.Sprintf("%s://%s", scheme, r.Host)
 	}
-	frontendURL := fmt.Sprintf("%s://%s/#token=%s&username=%s",
-		scheme, r.Host,
+
+	redirectURL := fmt.Sprintf("%s/#token=%s&username=%s",
+		frontendURL,
 		url.QueryEscape(jwtToken),
 		url.QueryEscape(username),
 	)
 
-	http.Redirect(w, r, frontendURL, http.StatusTemporaryRedirect)
+	http.Redirect(w, r, redirectURL, http.StatusTemporaryRedirect)
 }
 
 // lastfmSign creates the API signature Last.fm requires

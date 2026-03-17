@@ -6,13 +6,29 @@ import "./App.css";
 import Chains from "./Chains";
 import type { Chain } from "./api";
 
+function getAuthFromHash() {
+  const hash = window.location.hash;
+  if (hash.includes("token=")) {
+    const params = new URLSearchParams(hash.substring(1));
+    const t = params.get("token");
+    const u = params.get("username");
+    if (t && u) {
+      localStorage.setItem("token", t);
+      localStorage.setItem("username", u);
+      window.history.replaceState(null, "", window.location.pathname);
+      return { token: t, username: u };
+    }
+  }
+  return {
+    token: localStorage.getItem("token"),
+    username: localStorage.getItem("username"),
+  };
+}
+
 function App() {
-  const [token, setToken] = useState<string | null>(
-    localStorage.getItem("token"),
-  );
-  const [username, setUsername] = useState<string | null>(
-    localStorage.getItem("username"),
-  );
+  const [auth] = useState(getAuthFromHash);
+  const [token, setToken] = useState<string | null>(auth.token);
+  const [username, setUsername] = useState<string | null>(auth.username);
   const [page, setPage] = useState<"discover" | "history" | "chains">(
     "discover",
   );
