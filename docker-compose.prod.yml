@@ -17,6 +17,8 @@ services:
     environment:
       DATABASE_URL: postgres://songswap:${DB_PASSWORD}@db:5432/songswap?sslmode=disable
       JWT_SECRET: ${JWT_SECRET}
+      LASTFM_API_KEY: ${LASTFM_API_KEY}
+      LASTFM_SHARED_SECRET: ${LASTFM_SHARED_SECRET}
     restart: unless-stopped
 
   db:

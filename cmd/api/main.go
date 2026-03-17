@@ -45,6 +45,9 @@ func main() {
 	mux.HandleFunc("GET /chains/{id}/songs", handlers.GetChainSongs)
 	mux.HandleFunc("POST /chains/{id}/songs", middleware.AuthMiddleware(handlers.JwtSecret, handlers.AddSongToChain))
 	mux.HandleFunc("DELETE /chains/{id}/songs/{songId}", middleware.AuthMiddleware(handlers.JwtSecret, handlers.RemoveSongFromChain))
+	// Last.fm OAuth routes
+	mux.HandleFunc("GET /auth/lastfm", handlers.LastfmStart)
+	mux.HandleFunc("GET /auth/lastfm/callback", handlers.LastfmCallback)
 
 	handler := middleware.CORS(apiLimiter.Limit(mux))
 
