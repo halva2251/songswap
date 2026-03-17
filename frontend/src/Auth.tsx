@@ -67,6 +67,16 @@ export default function Auth({ onLogin }: AuthProps) {
       >
         sign in with last.fm
       </button>
+      <button
+        className="auth-button auth-button-discord"
+        onClick={() => {
+          const apiUrl =
+            import.meta.env.VITE_API_URL || "http://localhost:8080";
+          window.location.href = `${apiUrl}/auth/discord`;
+        }}
+      >
+        sign in with discord
+      </button>
 
       <p className="auth-switch">
         {isRegister ? "already have an account? " : "don't have an account? "}

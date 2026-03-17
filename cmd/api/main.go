@@ -48,6 +48,9 @@ func main() {
 	// Last.fm OAuth routes
 	mux.HandleFunc("GET /auth/lastfm", handlers.LastfmStart)
 	mux.HandleFunc("GET /auth/lastfm/callback", handlers.LastfmCallback)
+	// Discord OAuth routes
+	mux.HandleFunc("GET /auth/discord", handlers.DiscordStart)
+	mux.HandleFunc("GET /auth/discord/callback", handlers.DiscordCallback)
 
 	handler := middleware.CORS(apiLimiter.Limit(mux))
 

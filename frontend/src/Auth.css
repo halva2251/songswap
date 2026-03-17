@@ -115,3 +115,15 @@
 .auth-button-lastfm:hover {
   background: #b30d06;
 }
+
+.auth-button-discord {
+  width: 100%;
+  max-width: 320px;
+  background: #5865f2;
+  color: #fff;
+  margin-top: 8px;
+}
+
+.auth-button-discord:hover {
+  background: #4752c4;
+}
