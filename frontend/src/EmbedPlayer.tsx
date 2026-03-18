@@ -9,7 +9,7 @@ function getYouTubeId(url: string): string | null {
 
 function getSpotifyId(url: string): { type: string; id: string } | null {
   const match = url.match(
-    /open\.spotify\.com\/(track|album|playlist)\/([a-zA-Z0-9]+)/,
+    /open\.spotify\.com\/(?:intl-[a-zA-Z_-]+\/)?(track|album|playlist)\/([a-zA-Z0-9]+)/,
   );
   return match ? { type: match[1], id: match[2] } : null;
 }
